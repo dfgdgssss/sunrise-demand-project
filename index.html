@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunrise Demand Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+body{
+background:#f8fafc;
+color:#0f172a;
+padding:32px;
+}
+
+.container{
+max-width:1400px;
+margin:auto;
+}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:28px;
+}
+
+.title h1{
+font-size:30px;
+font-weight:700;
+letter-spacing:-0.5px;
+}
+
+.title p{
+font-size:14px;
+color:#64748b;
+margin-top:4px;
+}
+
+.badge{
+padding:8px 14px;
+background:#ecfeff;
+color:#0891b2;
+border-radius:999px;
+font-size:13px;
+font-weight:600;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+gap:18px;
+margin-bottom:24px;
+}
+
+.metric{
+background:white;
+border:1px solid #e2e8f0;
+border-radius:18px;
+padding:20px;
+box-shadow:0 2px 10px rgba(0,0,0,0.03);
+}
+
+.metric span{
+font-size:13px;
+color:#64748b;
+display:block;
+margin-bottom:10px;
+}
+
+.metric h2{
+font-size:28px;
+font-weight:700;
+}
+
+.card{
+background:white;
+border:1px solid #e2e8f0;
+border-radius:20px;
+padding:24px;
+margin-bottom:24px;
+box-shadow:0 4px 18px rgba(0,0,0,0.03);
+}
+
+.card-head{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.card-head h3{
+font-size:20px;
+font-weight:700;
+}
+
+.sub{
+font-size:13px;
+color:#64748b;
+}
+
+.upload-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:16px;
+margin-bottom:20px;
+}
+
+label{
+display:block;
+font-size:13px;
+font-weight:600;
+margin-bottom:8px;
+color:#334155;
+}
+
+input[type=file]{
+width:100%;
+padding:10px;
+border:1px solid #cbd5e1;
+border-radius:12px;
+background:#fff;
+}
+
+.actions{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+button{
+padding:11px 18px;
+border:none;
+border-radius:12px;
+font-size:14px;
+font-weight:600;
+cursor:pointer;
+transition:0.2s;
+}
+
+.primary{
+background:#2563eb;
+color:white;
+}
+
+.primary:hover{
+background:#1d4ed8;
+}
+
+.secondary{
+background:#f1f5f9;
+color:#0f172a;
+}
+
+.secondary:hover{
+background:#e2e8f0;
+}
+
+.success{
+background:#16a34a;
+color:white;
+}
+
+.success:hover{
+background:#15803d;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+overflow:hidden;
+border-radius:14px;
+}
+
+th{
+text-align:left;
+font-size:13px;
+padding:14px;
+background:#f8fafc;
+color:#475569;
+border-bottom:1px solid #e2e8f0;
+}
+
+td{
+padding:14px;
+font-size:14px;
+border-bottom:1px solid #f1f5f9;
+}
+
+tr:hover{
+background:#fafafa;
+}
+
+.status{
+display:inline-block;
+padding:6px 10px;
+border-radius:999px;
+font-size:12px;
+font-weight:600;
+background:#ecfccb;
+color:#3f6212;
+}
+
+#loader{
+display:none;
+margin-top:14px;
+font-size:14px;
+font-weight:600;
+color:#2563eb;
+}
+
+.footer{
+text-align:center;
+margin-top:20px;
+font-size:13px;
+color:#94a3b8;
+}
+
+@media(max-width:768px){
+body{padding:18px;}
+.topbar{
+flex-direction:column;
+align-items:flex-start;
+gap:10px;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="topbar">
+<div class="title">
+<h1>Sunrise Demand Dashboard</h1>
+<p>Forecasting, replenishment planning and inventory control</p>
+</div>
+
+<div class="badge">Live System</div>
+</div>
+
+
+<div class="grid">
+
+<div class="metric">
+<span>Total Products</span>
+<h2 id="productsCount">0</h2>
+</div>
+
+<div class="metric">
+<span>Forecast Records</span>
+<h2 id="forecastCount">0</h2>
+</div>
+
+<div class="metric">
+<span>Recommended Orders</span>
+<h2 id="orderCount">0</h2>
+</div>
+
+<div class="metric">
+<span>Status</span>
+<h2 style="font-size:20px;">Ready</h2>
+</div>
+
+</div>
+
+
+
+<div class="card">
+
+<div class="card-head">
+<div>
+<h3>Upload Source Files</h3>
+<div class="sub">Upload all required CSV files before running forecast</div>
+</div>
+</div>
+
+<div class="upload-grid">
+
+<div>
+<label>Sales History</label>
+<input type="file" id="salesFile">
+</div>
+
+<div>
+<label>Inventory Snapshot</label>
+<input type="file" id="inventoryFile">
+</div>
+
+<div>
+<label>SKU Master</label>
+<input type="file" id="skuFile">
+</div>
+
+<div>
+<label>Outlet Master</label>
+<input type="file" id="outletFile">
+</div>
+
+</div>
+
+<div class="actions">
+<button class="primary" onclick="runForecast()">Run Forecast</button>
+
+<a href="/download-report">
+<button class="secondary">Download Report</button>
+</a>
+
+<a href="/download-forecast">
+<button class="success">Download Forecast</button>
+</a>
+</div>
+
+<div id="loader">Processing forecast, please wait...</div>
+
+</div>
+
+
+
+<div class="card">
+
+<div class="card-head">
+<div>
+<h3>Monday Morning Report</h3>
+<div class="sub">Purchase recommendations based on forecast demand</div>
+</div>
+<span class="status">Updated</span>
+</div>
+
+<table id="reportTbl">
+<tr>
+<th>SKU</th>
+<th>Product</th>
+<th>Order Qty</th>
+</tr>
+</table>
+
+</div>
+
+
+
+<div class="card">
+
+<div class="card-head">
+<div>
+<h3>Weekly Demand Forecast</h3>
+<div class="sub">Next cycle estimated weekly demand</div>
+</div>
+</div>
+
+<table id="forecastTbl">
+<tr>
+<th>SKU</th>
+<th>Forecast Qty</th>
+</tr>
+</table>
+
+</div>
+
+
+<div class="footer">
+Professional Supply Chain Dashboard
+</div>
+
+</div>
+
+
+
+<script>
+
+async function loadReport(){
+
+let res = await fetch('/api/report');
+let data = await res.json();
+
+let html='<tr><th>SKU</th><th>Product</th><th>Order Qty</th></tr>';
+
+data.forEach(r=>{
+html += `
+<tr>
+<td>${r.sku_id}</td>
+<td>${r.product_name}</td>
+<td>${r.recommended_order_qty}</td>
+</tr>`;
+});
+
+document.getElementById("reportTbl").innerHTML=html;
+document.getElementById("orderCount").innerText=data.length;
+document.getElementById("productsCount").innerText=data.length;
+}
+
+
+
+async function loadForecast(){
+
+let res = await fetch('/api/forecast');
+let data = await res.json();
+
+let html='<tr><th>SKU</th><th>Forecast Qty</th></tr>';
+
+data.forEach(r=>{
+html += `
+<tr>
+<td>${r.sku_id}</td>
+<td>${Number(r.weekly_demand_forecast).toFixed(2)}</td>
+</tr>`;
+});
+
+document.getElementById("forecastTbl").innerHTML=html;
+document.getElementById("forecastCount").innerText=data.length;
+}
+
+
+
+async function runForecast(){
+
+document.getElementById("loader").style.display="block";
+
+let fd = new FormData();
+
+fd.append('sales',document.getElementById('salesFile').files[0]);
+fd.append('inventory',document.getElementById('inventoryFile').files[0]);
+fd.append('sku',document.getElementById('skuFile').files[0]);
+fd.append('outlet',document.getElementById('outletFile').files[0]);
+
+let res = await fetch('/run-forecast',{
+method:'POST',
+body:fd
+});
+
+let data = await res.json();
+
+alert(data.message);
+
+document.getElementById("loader").style.display="none";
+
+loadReport();
+loadForecast();
+
+}
+
+loadReport();
+loadForecast();
+
+</script>
+
+</body>
+</html>
